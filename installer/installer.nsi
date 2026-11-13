@@ -150,6 +150,42 @@ FunctionEnd
   ${EndIf}
 !macroend
 
+!define MUICACHE "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache"
+
+; Display name for one program in "Open with", and forget the name Windows cached from the file itself
+!macro AppName EXE NAME
+  WriteRegStr HKLM "Software\Classes\Applications\${EXE}" "FriendlyAppName" "${NAME}"
+  DeleteRegValue HKCU "Software\Classes\Applications\${EXE}" "FriendlyAppName"
+  DeleteRegValue HKCU "${MUICACHE}" "$LOProg\${EXE}.FriendlyAppName"
+  DeleteRegValue HKCU "${MUICACHE}" "$LOProg\${EXE}.ApplicationCompany"
+!macroend
+
+; Settings > Apps > Default apps lists the suite by its Capabilities ApplicationName ("LibreOffice 26.8").
+; Find that entry via RegisteredApplications, remember the original name, and call it Vino's Office.
+Function RenameRegisteredApp
+  StrCpy $R0 0
+  loop:
+    EnumRegValue $R1 HKLM "SOFTWARE\RegisteredApplications" $R0
+    StrCmp $R1 "" done
+    IntOp $R0 $R0 + 1
+    StrCpy $R2 $R1 11
+    StrCmp $R2 "LibreOffice" 0 loop
+    ReadRegStr $R3 HKLM "SOFTWARE\RegisteredApplications" $R1
+    StrCmp $R3 "" loop
+    ReadRegStr $R4 HKLM "${REGKEY}" "CapPath"
+    ${If} $R4 == ""   ; first time: keep the originals for uninstall
+      ReadRegStr $R5 HKLM "$R3" "ApplicationName"
+      ReadRegStr $R6 HKLM "$R3" "ApplicationDescription"
+      WriteRegStr HKLM "${REGKEY}" "CapPath" "$R3"
+      WriteRegStr HKLM "${REGKEY}" "CapName" "$R5"
+      WriteRegStr HKLM "${REGKEY}" "CapDesc" "$R6"
+    ${EndIf}
+    WriteRegStr HKLM "$R3" "ApplicationName" "${APP}"
+    WriteRegStr HKLM "$R3" "ApplicationDescription" "${APP}: spreadsheets, documents and presentations"
+    !insertmacro Log "Default apps entry renamed: $R3"
+  done:
+FunctionEnd
+
 Section "Install"
   SetOutPath "$INSTDIR\branding"
   File "${BRAND}\vinos-office.ico"
@@ -254,6 +290,18 @@ Section "Install"
   WriteRegStr HKLM "${UPDPOLICY}\AutoDownloadEnabled" "Type" "xs:boolean"
   WriteRegDWORD HKLM "${UPDPOLICY}\AutoDownloadEnabled" "Final" 1
 
+  ; Names in "Open with" and Default apps. Without these, Windows shows the names stored inside the
+  ; (signed, untouched) program files: "LibreOffice Calc" etc.
+  DetailPrint "Registering the ${APP} names with Windows..."
+  !insertmacro AppName "soffice.exe" "${APP}"
+  !insertmacro AppName "scalc.exe" "${APP} Calc"
+  !insertmacro AppName "swriter.exe" "${APP} Writer"
+  !insertmacro AppName "simpress.exe" "${APP} Impress"
+  !insertmacro AppName "sdraw.exe" "${APP} Draw"
+  !insertmacro AppName "smath.exe" "${APP} Math"
+  !insertmacro AppName "sbase.exe" "${APP} Base"
+  Call RenameRegisteredApp
+
   DetailPrint "Creating shortcuts..."
   CreateDirectory "$SMPROGRAMS\${APP}"
   CreateShortcut "$SMPROGRAMS\${APP}\${APP}.lnk" "$LOProg\soffice.exe" "" "$INSTDIR\branding\vinos-office.ico" 0
@@ -283,6 +331,12 @@ SectionEnd
     Delete "${FILE}"
     Rename "${FILE}.vinos-orig" "${FILE}"
   ${EndIf}
+!macroend
+
+!macro un.AppName EXE
+  DeleteRegValue HKLM "Software\Classes\Applications\${EXE}" "FriendlyAppName"
+  DeleteRegKey /ifempty HKLM "Software\Classes\Applications\${EXE}"
+  DeleteRegValue HKCU "${MUICACHE}" "$LOProg\${EXE}.FriendlyAppName"
 !macroend
 
 Function un.onInit
@@ -325,6 +379,22 @@ Section "Uninstall"
   DeleteRegKey HKLM "${UPDPOLICY}\AutoCheckEnabled"
   DeleteRegKey HKLM "${UPDPOLICY}\AutoDownloadEnabled"
   DeleteRegKey /ifempty HKLM "${UPDPOLICY}"
+
+  ; Open with / Default apps names back to the suite's own
+  !insertmacro un.AppName "soffice.exe"
+  !insertmacro un.AppName "scalc.exe"
+  !insertmacro un.AppName "swriter.exe"
+  !insertmacro un.AppName "simpress.exe"
+  !insertmacro un.AppName "sdraw.exe"
+  !insertmacro un.AppName "smath.exe"
+  !insertmacro un.AppName "sbase.exe"
+  ReadRegStr $5 HKLM "${REGKEY}" "CapPath"
+  ${If} $5 != ""
+    ReadRegStr $6 HKLM "${REGKEY}" "CapName"
+    ReadRegStr $7 HKLM "${REGKEY}" "CapDesc"
+    WriteRegStr HKLM "$5" "ApplicationName" "$6"
+    WriteRegStr HKLM "$5" "ApplicationDescription" "$7"
+  ${EndIf}
 
   Delete "$SMPROGRAMS\${APP}\*.lnk"
   RMDir "$SMPROGRAMS\${APP}"
