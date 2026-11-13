@@ -40,3 +40,9 @@ In every case, setup then:
 ## Theme switching
 
 LibreOffice applies a Light/Dark change only partly until it restarts, so with Windows in dark mode, choosing Light looks broken (pale icons and an unreadable menu bar). The branding add-on adds **View > Vino's Office Theme > Light / Dark / Same as Windows** (`branding-ext/vinos_theme.py`). It also watches the Appearance setting, including changes made in Tools > Options, and offers to restart straight away so the new theme applies fully. The prompt is a native Windows box, because LibreOffice's own dialogs are half-themed at that moment.
+
+## Modern look (1.0.6)
+
+- **Ribbon:** `branding-ext/vinos_ui.py` switches Calc, Writer, Impress and Draw to LibreOffice's Tabbed ribbon (`notebookbar.ui`) the first time each opens, once per user. It records this in `<profile>/config/vinosoffice-ui.json`, so anyone who switches back keeps their choice. Startup windows may not accept the command yet, so it retries for up to 10 s.
+- **Colours:** `branding-ext/VinoTheme.xcu` defines the VINO_LIGHT and VINO_DARK colour schemes. Note that they belong to component `org.openoffice.Office` / `UI`, node `ColorScheme`. `Common.xcu` turns them on (`LibreOfficeTheme=1`), and `vinos_theme.py` selects the scheme that matches Light / Dark / Same as Windows.
+- **Ribbon buttons:** the ribbon Extension tab gets the theme buttons (`ThemeMenu.xcu`) and Sheets Home / Contents (`Addons.xcu` in Sheets Home), all through `OfficeNotebookBar`.

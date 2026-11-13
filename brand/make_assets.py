@@ -100,7 +100,39 @@ def svg_of(img, width_px=None):
             f'<image width="{w}" height="{h}" xlink:href="data:image/png;base64,{data}" href="data:image/png;base64,{data}"/></svg>')
 
 
+def theme_icon(kind, size):
+    """Ribbon icons for the theme buttons: sun (Light), moon (Dark), half circle (Same as Windows)."""
+    s = 8
+    S = size * s
+    img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    teal, navy = (14, 143, 163, 255), (84, 118, 150, 255)  # "navy" is a mid slate so it shows on light and dark ribbons
+    c, r = S / 2, S * 0.22
+    if kind == "light":
+        for i in range(8):
+            import math
+            a = i * math.pi / 4
+            x1, y1 = c + math.cos(a) * r * 1.45, c + math.sin(a) * r * 1.45
+            x2, y2 = c + math.cos(a) * r * 2.0, c + math.sin(a) * r * 2.0
+            d.line((x1, y1, x2, y2), fill=teal, width=int(S * 0.08))
+        d.ellipse((c - r, c - r, c + r, c + r), fill=teal)
+    elif kind == "dark":
+        R = S * 0.36
+        d.ellipse((c - R, c - R, c + R, c + R), fill=navy)
+        d.ellipse((c - R + S * 0.2, c - R - S * 0.08, c + R + S * 0.2, c + R - S * 0.08), fill=(0, 0, 0, 0))
+    else:  # auto: half light, half dark
+        R = S * 0.38
+        d.ellipse((c - R, c - R, c + R, c + R), outline=navy, width=int(S * 0.07))
+        d.pieslice((c - R, c - R, c + R, c + R), 90, 270, fill=navy)
+    return img.resize((size, size), Image.LANCZOS)
+
+
 def main():
+    icons = HERE.parent / "branding-ext" / "icons"
+    icons.mkdir(parents=True, exist_ok=True)
+    for kind in ("light", "dark", "auto"):
+        for n in (16, 26):
+            theme_icon(kind, n).save(icons / f"theme_{kind}_{n}.png")
     (OUT / "program" / "shell").mkdir(parents=True, exist_ok=True)
     splash(644, 199).save(OUT / "program" / "intro.png")
     splash(990, 306).save(OUT / "program" / "intro-highres.png")

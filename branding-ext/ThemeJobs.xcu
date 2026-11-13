@@ -5,13 +5,16 @@
     <node oor:name="VinosThemeWatcher" oor:op="replace">
       <prop oor:name="Service"><value>com.vinosoffice.ThemeWatcher</value></prop>
     </node>
+    <node oor:name="VinosRibbon" oor:op="replace">
+      <prop oor:name="Service"><value>com.vinosoffice.RibbonJob</value></prop>
+    </node>
   </node>
   <node oor:name="Events">
     <node oor:name="OnStartApp" oor:op="fuse">
       <node oor:name="JobList"><node oor:name="VinosThemeWatcher" oor:op="replace"/></node>
     </node>
     <node oor:name="OnViewCreated" oor:op="fuse">
-      <node oor:name="JobList"><node oor:name="VinosThemeWatcher" oor:op="replace"/></node>
+      <node oor:name="JobList"><node oor:name="VinosThemeWatcher" oor:op="replace"/><node oor:name="VinosRibbon" oor:op="replace"/></node>
     </node>
   </node>
 </oor:component-data>

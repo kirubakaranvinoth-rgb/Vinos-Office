@@ -5,6 +5,10 @@
     <prop oor:name="ShowTipOfTheDay" oor:op="replace"><value>false</value></prop>
     <prop oor:name="ShowDonation" oor:op="replace"><value>false</value></prop>
   </node>
+  <node oor:name="Appearance">
+    <!-- turn on Vino's program colours (VinoTheme.xcu) -->
+    <prop oor:name="LibreOfficeTheme" oor:op="replace"><value>1</value></prop>
+  </node>
   <node oor:name="Help">
     <node oor:name="StartCenter">
       <!-- Start Center middle area: Vino navy (matches the logo tile) with soft white text, in light and dark theme -->

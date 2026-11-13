@@ -152,9 +152,43 @@ def offer_restart(ctx):
         _state["asking"] = False
 
 
+COLORSCHEME = "/org.openoffice.Office.UI/ColorScheme"
+VINO_SCHEMES = ("VINO_LIGHT", "VINO_DARK")             # defined in VinoTheme.xcu
+MANAGED_SCHEMES = ("", "COLOR_SCHEME_LIBREOFFICE_AUTOMATIC") + VINO_SCHEMES
+
+
+def windows_is_dark():
+    try:
+        import winreg
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize") as k:
+            return winreg.QueryValueEx(k, "AppsUseLightTheme")[0] == 0
+    except Exception:
+        return False
+
+
+def sync_scheme(ctx, mode=None):
+    """Select the Vino colour scheme that matches Light / Dark / Same as Windows. Leaves a colour scheme
+    the user picked themselves in Tools > Options alone. Returns True if it changed anything."""
+    try:
+        cur = _cfg(ctx, COLORSCHEME).getPropertyValue("CurrentColorScheme") or ""
+        if cur not in MANAGED_SCHEMES:
+            return False
+        mode = current_mode(ctx) if mode is None else mode
+        want = "VINO_DARK" if mode == 2 or (mode == 0 and windows_is_dark()) else "VINO_LIGHT"
+        if cur == want:
+            return False
+        upd = _cfg(ctx, COLORSCHEME, True)
+        upd.setPropertyValue("CurrentColorScheme", want)
+        upd.commitChanges()
+        return True
+    except Exception:
+        return False
+
+
 def set_mode(ctx, mode):
     if mode == current_mode(ctx):
         return False
+    sync_scheme(ctx, mode)  # colours for the new theme, ready for the restart
     upd = _cfg(ctx, APPEARANCE, True)
     upd.setPropertyValue("ApplicationAppearance", mode)
     upd.commitChanges()  # the watcher below sees this and offers the restart
@@ -172,9 +206,10 @@ class AppearanceWatcher(unohelper.Base, XChangesListener):
         mode = current_mode(self.ctx)
         if mode != _state["last"]:
             _state["last"] = mode
+            ctx = self.ctx
+            in_background(lambda: sync_scheme(ctx))  # matching Vino colours, also when the language restart comes first
             if not _state["pending"]:
                 _state["pending"] = True
-                ctx = self.ctx
                 in_background(lambda: offer_restart(ctx))
 
     def disposing(self, event):
@@ -213,6 +248,8 @@ def start_watching(ctx):
     try:
         _state["last"] = current_mode(ctx)
         _state["ui"] = ui_locale(ctx)
+        # first start after install, or Windows switched light/dark while using "Same as Windows"
+        _state["scheme_changed_at_start"] = sync_scheme(ctx)
         node = _cfg(ctx, APPEARANCE)
         listener = AppearanceWatcher(ctx)
         node.addChangesListener(listener)

@@ -38,5 +38,60 @@
         </node>
       </node>
     </node>
+    <!-- Ribbon (Tabbed layout): buttons on the Extension tab -->
+    <node oor:name="OfficeNotebookBar">
+      <node oor:name="com.vinosoffice.theme" oor:op="replace">
+        <node oor:name="N1" oor:op="replace">
+          <prop oor:name="URL"><value>com.vinosoffice.theme:Light</value></prop>
+          <prop oor:name="Title"><value xml:lang="en-US">Light</value><value xml:lang="zh-CN">浅色</value><value xml:lang="zh-TW">淺色</value></prop>
+          <prop oor:name="Target"><value>_self</value></prop>
+          <prop oor:name="Context"><value></value></prop>
+          <prop oor:name="ControlType"><value>ImageButton</value></prop>
+          <prop oor:name="Width"><value>0</value></prop>
+          <prop oor:name="Style"><value>Icon+Text</value></prop>
+        </node>
+        <node oor:name="N2" oor:op="replace">
+          <prop oor:name="URL"><value>com.vinosoffice.theme:Dark</value></prop>
+          <prop oor:name="Title"><value xml:lang="en-US">Dark</value><value xml:lang="zh-CN">深色</value><value xml:lang="zh-TW">深色</value></prop>
+          <prop oor:name="Target"><value>_self</value></prop>
+          <prop oor:name="Context"><value></value></prop>
+          <prop oor:name="ControlType"><value>ImageButton</value></prop>
+          <prop oor:name="Width"><value>0</value></prop>
+          <prop oor:name="Style"><value>Icon+Text</value></prop>
+        </node>
+        <node oor:name="N3" oor:op="replace">
+          <prop oor:name="URL"><value>com.vinosoffice.theme:Auto</value></prop>
+          <prop oor:name="Title"><value xml:lang="en-US">Same as Windows</value><value xml:lang="zh-CN">跟随 Windows</value><value xml:lang="zh-TW">跟隨 Windows</value></prop>
+          <prop oor:name="Target"><value>_self</value></prop>
+          <prop oor:name="Context"><value></value></prop>
+          <prop oor:name="ControlType"><value>ImageButton</value></prop>
+          <prop oor:name="Width"><value>0</value></prop>
+          <prop oor:name="Style"><value>Icon+Text</value></prop>
+        </node>
+      </node>
+    </node>
+    <node oor:name="Images">
+      <node oor:name="com.vinosoffice.theme.light" oor:op="replace">
+        <prop oor:name="URL"><value>com.vinosoffice.theme:Light</value></prop>
+        <node oor:name="UserDefinedImages">
+          <prop oor:name="ImageSmallURL"><value>%origin%/icons/theme_light_16.png</value></prop>
+          <prop oor:name="ImageBigURL"><value>%origin%/icons/theme_light_26.png</value></prop>
+        </node>
+      </node>
+      <node oor:name="com.vinosoffice.theme.dark" oor:op="replace">
+        <prop oor:name="URL"><value>com.vinosoffice.theme:Dark</value></prop>
+        <node oor:name="UserDefinedImages">
+          <prop oor:name="ImageSmallURL"><value>%origin%/icons/theme_dark_16.png</value></prop>
+          <prop oor:name="ImageBigURL"><value>%origin%/icons/theme_dark_26.png</value></prop>
+        </node>
+      </node>
+      <node oor:name="com.vinosoffice.theme.auto" oor:op="replace">
+        <prop oor:name="URL"><value>com.vinosoffice.theme:Auto</value></prop>
+        <node oor:name="UserDefinedImages">
+          <prop oor:name="ImageSmallURL"><value>%origin%/icons/theme_auto_16.png</value></prop>
+          <prop oor:name="ImageBigURL"><value>%origin%/icons/theme_auto_26.png</value></prop>
+        </node>
+      </node>
+    </node>
   </node>
 </oor:component-data>

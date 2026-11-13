@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Vino's Office program colours (LibreOffice "application colours").
+     Two schemes, VINO_LIGHT and VINO_DARK; vinos_theme.py selects the one matching the Light/Dark
+     setting (or Windows, for "Same as Windows"). LibreOfficeTheme = 1 turns the colour overrides on. -->
+<oor:component-data xmlns:oor="http://openoffice.org/2001/registry" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    oor:name="UI" oor:package="org.openoffice.Office">
+ <node oor:name="ColorScheme">
+  <node oor:name="ColorSchemes">
+      <!-- Light: white / cool-grey surfaces, navy text, teal accent -->
+      <node oor:name="VINO_LIGHT" oor:op="replace">
+        <node oor:name="WindowColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>16054009</value></prop></node>  <!-- #F4F6F9 -->
+        <node oor:name="WindowTextColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>1779507</value></prop></node>  <!-- #1B2733 -->
+        <node oor:name="BaseColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>16777215</value></prop></node>  <!-- #FFFFFF -->
+        <node oor:name="ButtonColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>16777215</value></prop></node>  <!-- #FFFFFF -->
+        <node oor:name="ButtonTextColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>1779507</value></prop></node>  <!-- #1B2733 -->
+        <node oor:name="AccentColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>954275</value></prop></node>  <!-- #0E8FA3 -->
+        <node oor:name="DisabledColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>14936044</value></prop></node>  <!-- #E3E7EC -->
+        <node oor:name="DisabledTextColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>9082531</value></prop></node>  <!-- #8A96A3 -->
+        <node oor:name="FaceColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>15659509</value></prop></node>  <!-- #EEF1F5 -->
+        <node oor:name="ActiveTextColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>727594</value></prop></node>  <!-- #0B1A2A -->
+        <node oor:name="FieldColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>16777215</value></prop></node>  <!-- #FFFFFF -->
+        <node oor:name="MenuBarColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>727594</value></prop></node>  <!-- #0B1A2A -->
+        <node oor:name="MenuBarTextColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>16777215</value></prop></node>  <!-- #FFFFFF -->
+        <node oor:name="MenuBarHighlightColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>2046546</value></prop></node>  <!-- #1F3A52 -->
+        <node oor:name="MenuBarHighlightTextColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>16777215</value></prop></node>  <!-- #FFFFFF -->
+        <node oor:name="MenuColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>16777215</value></prop></node>  <!-- #FFFFFF -->
+        <node oor:name="MenuTextColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>1779507</value></prop></node>  <!-- #1B2733 -->
+        <node oor:name="MenuHighlightColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>14545910</value></prop></node>  <!-- #DDF3F6 -->
+        <node oor:name="MenuHighlightTextColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>727594</value></prop></node>  <!-- #0B1A2A -->
+        <node oor:name="MenuBorderColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>14015715</value></prop></node>  <!-- #D5DCE3 -->
+        <node oor:name="InactiveTextColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>9082531</value></prop></node>  <!-- #8A96A3 -->
+      </node>
+      <!-- Dark: navy / charcoal surfaces, soft white text, bright teal accent -->
+      <node oor:name="VINO_DARK" oor:op="replace">
+        <node oor:name="WindowColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>1121319</value></prop></node>  <!-- #111C27 -->
+        <node oor:name="WindowTextColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>15134453</value></prop></node>  <!-- #E6EEF5 -->
+        <node oor:name="BaseColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>726304</value></prop></node>  <!-- #0B1520 -->
+        <node oor:name="ButtonColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>1714230</value></prop></node>  <!-- #1A2836 -->
+        <node oor:name="ButtonTextColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>15134453</value></prop></node>  <!-- #E6EEF5 -->
+        <node oor:name="AccentColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>4244694</value></prop></node>  <!-- #40C4D6 -->
+        <node oor:name="DisabledColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>1713457</value></prop></node>  <!-- #1A2531 -->
+        <node oor:name="DisabledTextColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>7307151</value></prop></node>  <!-- #6F7F8F -->
+        <node oor:name="FaceColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>1450542</value></prop></node>  <!-- #16222E -->
+        <node oor:name="ActiveTextColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>16777215</value></prop></node>  <!-- #FFFFFF -->
+        <node oor:name="FieldColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>923682</value></prop></node>  <!-- #0E1822 -->
+        <node oor:name="MenuBarColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>727594</value></prop></node>  <!-- #0B1A2A -->
+        <node oor:name="MenuBarTextColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>15134453</value></prop></node>  <!-- #E6EEF5 -->
+        <node oor:name="MenuBarHighlightColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>2046546</value></prop></node>  <!-- #1F3A52 -->
+        <node oor:name="MenuBarHighlightTextColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>16777215</value></prop></node>  <!-- #FFFFFF -->
+        <node oor:name="MenuColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>1121319</value></prop></node>  <!-- #111C27 -->
+        <node oor:name="MenuTextColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>15134453</value></prop></node>  <!-- #E6EEF5 -->
+        <node oor:name="MenuHighlightColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>1393485</value></prop></node>  <!-- #15434D -->
+        <node oor:name="MenuHighlightTextColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>16777215</value></prop></node>  <!-- #FFFFFF -->
+        <node oor:name="MenuBorderColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>2372676</value></prop></node>  <!-- #243444 -->
+        <node oor:name="InactiveTextColor" oor:op="fuse"><prop oor:name="Color" oor:op="fuse"><value>7307151</value></prop></node>  <!-- #6F7F8F -->
+      </node>
+  </node>
+ </node>
+</oor:component-data>
