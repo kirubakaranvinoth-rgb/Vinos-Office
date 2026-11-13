@@ -4,4 +4,8 @@
   <manifest:file-entry manifest:full-path="Infobars.xcu" manifest:media-type="application/vnd.sun.star.configuration-data"/>
   <manifest:file-entry manifest:full-path="Common.xcu" manifest:media-type="application/vnd.sun.star.configuration-data"/>
   <manifest:file-entry manifest:full-path="UpdateLock.xcu" manifest:media-type="application/vnd.sun.star.configuration-data"/>
+  <manifest:file-entry manifest:full-path="vinos_theme.py" manifest:media-type="application/vnd.sun.star.uno-component;type=Python"/>
+  <manifest:file-entry manifest:full-path="ThemeHandler.xcu" manifest:media-type="application/vnd.sun.star.configuration-data"/>
+  <manifest:file-entry manifest:full-path="ThemeJobs.xcu" manifest:media-type="application/vnd.sun.star.configuration-data"/>
+  <manifest:file-entry manifest:full-path="ThemeMenu.xcu" manifest:media-type="application/vnd.sun.star.configuration-data"/>
 </manifest:manifest>

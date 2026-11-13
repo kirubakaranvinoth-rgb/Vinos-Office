@@ -36,3 +36,7 @@ In every case, setup then:
 - `brand/make_assets.py` draws the splash, logos, icon and installer images from the Vino logo and art.
 - `branding-ext/` holds the configuration add-on (product name, popups).
 - `installer/installer.nsi` is the setup script, and `installer/notice.txt` is the LibreOffice / MPL-2.0 notice shown during setup.
+
+## Theme switching
+
+LibreOffice applies a Light/Dark change only partly until it restarts, so with Windows in dark mode, choosing Light looks broken (pale icons and an unreadable menu bar). The branding add-on adds **View > Vino's Office Theme > Light / Dark / Same as Windows** (`branding-ext/vinos_theme.py`). It also watches the Appearance setting, including changes made in Tools > Options, and offers to restart straight away so the new theme applies fully. The prompt is a native Windows box, because LibreOffice's own dialogs are half-themed at that moment.
