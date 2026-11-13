@@ -20,7 +20,7 @@ import uno
 import unohelper
 from com.sun.star.awt import XActionListener, XItemListener, XKeyListener, XMouseListener, XTextListener
 from com.sun.star.awt.grid import XGridSelectionListener
-from com.sun.star.frame import XDispatch, XDispatchProvider
+from com.sun.star.frame import XDispatch, XDispatchProvider, XTerminateListener
 from com.sun.star.lang import XInitialization, XServiceInfo
 from com.sun.star.sheet import XActivationEventListener
 from com.sun.star.task import XJob
@@ -90,8 +90,39 @@ class ActivationListener(unohelper.Base, XActivationEventListener):
                 pass
 
 
+_exit = {"terminating": False, "hooked": False}
+
+
+class StopOnExit(unohelper.Base, XTerminateListener):
+    """When Vino's Office closes or restarts (e.g. after changing the menu language), detach every
+    listener, so none of our Python code is running while LibreOffice shuts down."""
+
+    def queryTermination(self, event):
+        pass
+
+    def notifyTermination(self, event):
+        untrack_all()
+
+    def disposing(self, event):
+        untrack_all()
+
+
+def untrack_all():
+    _exit["terminating"] = True
+    for e in list(_recent):
+        ctrl, listener = e.pop("ctrl", None), e.pop("listener", None)
+        if ctrl is not None and listener is not None:
+            try:
+                ctrl.removeActivationEventListener(listener)
+            except Exception:
+                pass
+    del _recent[:]
+
+
 def track(model):
     """Start remembering sheet switches for this Calc document (once per document)."""
+    if _exit["terminating"]:
+        return
     try:
         if not model or not model.supportsService("com.sun.star.sheet.SpreadsheetDocument"):
             return
@@ -101,9 +132,14 @@ def track(model):
         ctrl = model.getCurrentController()
         if ctrl is None:
             return
-        ctrl.addActivationEventListener(ActivationListener(model))
-        e["listening"] = True
+        listener = ActivationListener(model)
+        ctrl.addActivationEventListener(listener)
+        e["listening"], e["ctrl"], e["listener"] = True, ctrl, listener
         touch_recent(model, ctrl.getActiveSheet().getName())
+        if not _exit["hooked"]:
+            ctx = uno.getComponentContext()
+            ctx.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", ctx).addTerminateListener(StopOnExit())
+            _exit["hooked"] = True
     except Exception:
         pass
 

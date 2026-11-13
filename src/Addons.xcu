@@ -12,12 +12,12 @@
           <node oor:name="MenuItems">
             <node oor:name="M1" oor:op="replace">
               <prop oor:name="URL"><value>org.celllite.sheetshome:Home</value></prop>
-              <prop oor:name="Title"><value xml:lang="en-US">Sheets ~Home...</value></prop>
+              <prop oor:name="Title"><value xml:lang="en-US">Sheets ~Home...</value><value xml:lang="zh-CN">工作表主页(~H)...</value><value xml:lang="zh-TW">工作表首頁(~H)...</value></prop>
               <prop oor:name="Target"><value>_self</value></prop>
             </node>
             <node oor:name="M2" oor:op="replace">
               <prop oor:name="URL"><value>org.celllite.sheetshome:Index</value></prop>
-              <prop oor:name="Title"><value xml:lang="en-US">Create Contents Inde~x Sheet</value></prop>
+              <prop oor:name="Title"><value xml:lang="en-US">Create Contents Inde~x Sheet</value><value xml:lang="zh-CN">创建目录索引工作表(~X)</value><value xml:lang="zh-TW">建立目錄索引工作表(~X)</value></prop>
               <prop oor:name="Target"><value>_self</value></prop>
             </node>
             <node oor:name="M3" oor:op="replace">
@@ -31,7 +31,7 @@
       <node oor:name="org.celllite.sheetshome" oor:op="replace">
         <node oor:name="T1" oor:op="replace">
           <prop oor:name="URL"><value>org.celllite.sheetshome:Home</value></prop>
-          <prop oor:name="Title"><value xml:lang="en-US">Sheets Home (Ctrl+Shift+H)</value></prop>
+          <prop oor:name="Title"><value xml:lang="en-US">Sheets Home (Ctrl+Shift+H)</value><value xml:lang="zh-CN">工作表主页 (Ctrl+Shift+H)</value><value xml:lang="zh-TW">工作表首頁 (Ctrl+Shift+H)</value></prop>
           <prop oor:name="Target"><value>_self</value></prop>
           <prop oor:name="Context"><value>com.sun.star.sheet.SpreadsheetDocument</value></prop>
         </node>
