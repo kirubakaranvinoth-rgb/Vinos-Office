@@ -1,0 +1,1 @@
+Sheets Home for LibreOffice Calc, from CellLite. Press Ctrl+Shift+H (or Sheet > Sheets Home...) to see every sheet in the workbook: search by name, sort, recently used sheets, hidden sheets, a preview of each sheet, rename / hide / add sheets, and create a "Contents" index sheet that links to every sheet.
