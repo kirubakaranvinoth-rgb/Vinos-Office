@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<oor:component-data xmlns:oor="http://openoffice.org/2001/registry" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    oor:name="Addons" oor:package="org.openoffice.Office">
+  <node oor:name="AddonUI">
+    <node oor:name="OfficeMenuBarMerging">
+      <node oor:name="com.vinosoffice.reading" oor:op="replace">
+        <node oor:name="S1" oor:op="replace">
+          <prop oor:name="MergePoint"><value>.uno:ViewMenu\.uno:ViewColumnRowHighlighting</value></prop>
+          <prop oor:name="MergeCommand"><value>AddAfter</value></prop>
+          <prop oor:name="MergeFallback"><value>AddPath</value></prop>
+          <prop oor:name="MergeContext"><value>com.sun.star.sheet.SpreadsheetDocument</value></prop>
+          <node oor:name="MenuItems">
+            <node oor:name="M1" oor:op="replace">
+              <prop oor:name="URL"><value>com.vinosoffice.reading:Color</value></prop>
+              <prop oor:name="Title"><value xml:lang="en-US">Highlight Colo~ur...</value><value xml:lang="zh-CN">突出显示颜色(~U)...</value><value xml:lang="zh-TW">醒目提示色彩(~U)...</value></prop>
+              <prop oor:name="Target"><value>_self</value></prop>
+            </node>
+          </node>
+        </node>
+      </node>
+    </node>
+    <node oor:name="OfficeNotebookBar">
+      <node oor:name="com.vinosoffice.reading" oor:op="replace">
+        <node oor:name="N1" oor:op="replace">
+          <prop oor:name="URL"><value>com.vinosoffice.reading:Toggle</value></prop>
+          <prop oor:name="Title"><value xml:lang="en-US">Reading Mode (Ctrl+Shift+Alt+R)</value><value xml:lang="zh-CN">阅读模式 (Ctrl+Shift+Alt+R)</value><value xml:lang="zh-TW">閱讀模式 (Ctrl+Shift+Alt+R)</value></prop>
+          <prop oor:name="Target"><value>_self</value></prop>
+          <prop oor:name="Context"><value>com.sun.star.sheet.SpreadsheetDocument</value></prop>
+          <prop oor:name="ControlType"><value>ImageButton</value></prop>
+          <prop oor:name="Width"><value>0</value></prop>
+          <prop oor:name="Style"><value>Icon+Text</value></prop>
+        </node>
+        <node oor:name="N2" oor:op="replace">
+          <prop oor:name="URL"><value>com.vinosoffice.reading:Color</value></prop>
+          <prop oor:name="Title"><value xml:lang="en-US">Highlight Colour</value><value xml:lang="zh-CN">突出显示颜色</value><value xml:lang="zh-TW">醒目提示色彩</value></prop>
+          <prop oor:name="Target"><value>_self</value></prop>
+          <prop oor:name="Context"><value>com.sun.star.sheet.SpreadsheetDocument</value></prop>
+          <prop oor:name="ControlType"><value>ImageButton</value></prop>
+          <prop oor:name="Width"><value>0</value></prop>
+          <prop oor:name="Style"><value>Icon+Text</value></prop>
+        </node>
+      </node>
+    </node>
+    <node oor:name="Images">
+      <node oor:name="com.vinosoffice.reading.toggle" oor:op="replace">
+        <prop oor:name="URL"><value>com.vinosoffice.reading:Toggle</value></prop>
+        <node oor:name="UserDefinedImages">
+          <prop oor:name="ImageSmallURL"><value>%origin%/icons/reading_16.png</value></prop>
+          <prop oor:name="ImageBigURL"><value>%origin%/icons/reading_26.png</value></prop>
+        </node>
+      </node>
+      <node oor:name="com.vinosoffice.reading.color" oor:op="replace">
+        <prop oor:name="URL"><value>com.vinosoffice.reading:Color</value></prop>
+        <node oor:name="UserDefinedImages">
+          <prop oor:name="ImageSmallURL"><value>%origin%/icons/readcolor_16.png</value></prop>
+          <prop oor:name="ImageBigURL"><value>%origin%/icons/readcolor_26.png</value></prop>
+        </node>
+      </node>
+    </node>
+  </node>
+</oor:component-data>

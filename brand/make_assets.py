@@ -127,12 +127,39 @@ def theme_icon(kind, size):
     return img.resize((size, size), Image.LANCZOS)
 
 
+def reading_icon(kind, size):
+    """Reading Mode: a grid with a highlighted row + column. Colour: four colour swatches."""
+    s = 8
+    S = size * s
+    img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    teal, slate = (14, 143, 163, 255), (84, 118, 150, 255)
+    if kind == "reading":
+        band = (14, 143, 163, 110)
+        d.rectangle((S * 0.08, S * 0.40, S * 0.92, S * 0.60), fill=band)   # row
+        d.rectangle((S * 0.40, S * 0.08, S * 0.60, S * 0.92), fill=band)   # column
+        w = max(1, int(S * 0.05))
+        for t in (0.08, 0.40, 0.60, 0.92):
+            d.line((S * 0.08, S * t, S * 0.92, S * t), fill=slate, width=w)
+            d.line((S * t, S * 0.08, S * t, S * 0.92), fill=slate, width=w)
+        d.rectangle((S * 0.40, S * 0.40, S * 0.60, S * 0.60), outline=teal, width=int(S * 0.08))
+    else:
+        cols = [(245, 184, 0, 255), (46, 158, 68, 255), (47, 111, 214, 255), (224, 69, 123, 255)]
+        for i, c in enumerate(cols):
+            x, y = (i % 2) * S * 0.48 + S * 0.06, (i // 2) * S * 0.48 + S * 0.06
+            d.rounded_rectangle((x, y, x + S * 0.40, y + S * 0.40), radius=S * 0.08, fill=c)
+    return img.resize((size, size), Image.LANCZOS)
+
+
 def main():
     icons = HERE.parent / "branding-ext" / "icons"
     icons.mkdir(parents=True, exist_ok=True)
     for kind in ("light", "dark", "auto"):
         for n in (16, 26):
             theme_icon(kind, n).save(icons / f"theme_{kind}_{n}.png")
+    for kind, fname in (("reading", "reading"), ("color", "readcolor")):
+        for n in (16, 26):
+            reading_icon(kind, n).save(icons / f"{fname}_{n}.png")
     (OUT / "program" / "shell").mkdir(parents=True, exist_ok=True)
     splash(644, 199).save(OUT / "program" / "intro.png")
     splash(990, 306).save(OUT / "program" / "intro-highres.png")

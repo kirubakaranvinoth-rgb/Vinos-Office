@@ -10,4 +10,8 @@
   <manifest:file-entry manifest:full-path="ThemeMenu.xcu" manifest:media-type="application/vnd.sun.star.configuration-data"/>
   <manifest:file-entry manifest:full-path="VinoTheme.xcu" manifest:media-type="application/vnd.sun.star.configuration-data"/>
   <manifest:file-entry manifest:full-path="vinos_ui.py" manifest:media-type="application/vnd.sun.star.uno-component;type=Python"/>
+  <manifest:file-entry manifest:full-path="vinos_reading.py" manifest:media-type="application/vnd.sun.star.uno-component;type=Python"/>
+  <manifest:file-entry manifest:full-path="ReadingHandler.xcu" manifest:media-type="application/vnd.sun.star.configuration-data"/>
+  <manifest:file-entry manifest:full-path="ReadingKeys.xcu" manifest:media-type="application/vnd.sun.star.configuration-data"/>
+  <manifest:file-entry manifest:full-path="ReadingMenu.xcu" manifest:media-type="application/vnd.sun.star.configuration-data"/>
 </manifest:manifest>

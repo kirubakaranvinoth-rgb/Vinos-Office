@@ -48,3 +48,9 @@ LibreOffice applies a Light/Dark change only partly until it restarts, so with W
 - **Ribbon buttons:** the ribbon Extension tab gets the theme buttons (`ThemeMenu.xcu`) and Sheets Home / Contents (`Addons.xcu` in Sheets Home), all through `OfficeNotebookBar`.
 
 The tab headers are drawn by Windows' native tab control, and no setting changes them. `VCL_DRAW_WIDGETS_FROM_FILE` / theme_definitions has no effect on the Windows backend, and `SAL_NO_NWF` gives older-looking outlined tabs. Flat tabs would need a rebuilt LibreOffice.
+
+## Reading Mode (1.0.11)
+
+Like WPS Reading Mode, the selected cell's row and column are highlighted. It uses Calc's built-in Column/Row Highlighting (`.uno:ViewColumnRowHighlighting`, off by default). Its colour is the `CalcCellFocus` application colour, which falls back to the accent colour when unset. `branding-ext/vinos_reading.py` provides:
+- `com.vinosoffice.reading:Toggle`: the ribbon Extension tab button and Ctrl+Shift+Alt+R.
+- `com.vinosoffice.reading:Color`: a palette with 8 colours plus LibreOffice's colour picker, also reachable from View > Highlight Colour… It writes `CalcCellFocus` into both Vino schemes and the current scheme, turns highlighting on, and repaints straight away.
