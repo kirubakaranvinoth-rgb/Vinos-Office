@@ -15,7 +15,7 @@ from PIL import Image, ImageDraw
 ROOT = Path(__file__).resolve().parent
 SRC = ROOT / "src"
 DIST = ROOT / "dist"
-INSTALLERS = ROOT.parent / "Installers"
+INSTALLERS = ROOT.parent.parent / "Installers"  # next to the vinos-office folder (same place as the setup)
 GREEN = (30, 142, 62, 255)
 
 

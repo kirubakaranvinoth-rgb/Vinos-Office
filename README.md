@@ -14,7 +14,7 @@ Requirements:
 - `vendor/LibreOffice_<ver>_Win_x86-64.msi` from https://www.libreoffice.org/download/. It's kept out of git because of its size.
 - Pillow, used to draw the brand images.
 - NSIS, from the Tauri toolchain at `%LOCALAPPDATA%\tauri\NSIS`.
-- `../libreoffice-sheets-home`, for the Sheets Home add-on.
+- `sheets-home/`: the Sheets Home add-on (built automatically). It was a separate repo until 2026-11-14 and keeps its history.
 
 Bump `VERSION` in `build.py` for each release. To move to a newer LibreOffice, download its MSI and update `LO_VERSION` and `LO_PRODUCTCODE` in `build.py`. You can read the product code from the MSI's Property table.
 

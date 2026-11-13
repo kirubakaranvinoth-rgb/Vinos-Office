@@ -24,7 +24,7 @@ LO_PRODUCTCODE = "{2E138BFE-5DFE-4CCB-B34D-56308CCE5097}"
 ROOT = Path(__file__).resolve().parent
 BUILD = ROOT / "build"
 INSTALLERS = ROOT.parent / "Installers"
-SHEETS_HOME = ROOT.parent / "libreoffice-sheets-home"
+SHEETS_HOME = ROOT / "sheets-home"  # the Sheets Home add-on lives in this repo
 MAKENSIS = Path(os.environ["LOCALAPPDATA"]) / "tauri" / "NSIS" / "makensis.exe"
 
 
