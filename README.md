@@ -43,6 +43,8 @@ LibreOffice applies a Light/Dark change only partly until it restarts, so with W
 
 ## Modern look (1.0.6)
 
-- **Ribbon:** `branding-ext/vinos_ui.py` switches Calc, Writer, Impress and Draw to LibreOffice's Tabbed Compact ribbon (`notebookbar_compact.ui`, since 1.0.7; the header uses the solid app colour via `NotebookbarColorTransparency=0`) the first time each opens, once per user. It records this in `<profile>/config/vinosoffice-ui.json`, so anyone who switches back keeps their choice. Startup windows may not accept the command yet, so it retries for up to 10 s.
+- **Ribbon:** `branding-ext/vinos_ui.py` switches Calc, Writer, Impress and Draw to LibreOffice's Tabbed ribbon (`notebookbar.ui`; 1.0.7 tried the compact ribbon, 1.0.8 is back to full). `NotebookbarColorTransparency=255` removes the app-colour tint and frame the first time each opens, once per user. It records this in `<profile>/config/vinosoffice-ui.json`, so anyone who switches back keeps their choice. Startup windows may not accept the command yet, so it retries for up to 10 s.
 - **Colours:** `branding-ext/VinoTheme.xcu` defines the VINO_LIGHT and VINO_DARK colour schemes. Note that they belong to component `org.openoffice.Office` / `UI`, node `ColorScheme`. `Common.xcu` turns them on (`LibreOfficeTheme=1`), and `vinos_theme.py` selects the scheme that matches Light / Dark / Same as Windows.
 - **Ribbon buttons:** the ribbon Extension tab gets the theme buttons (`ThemeMenu.xcu`) and Sheets Home / Contents (`Addons.xcu` in Sheets Home), all through `OfficeNotebookBar`.
+
+The tab headers are drawn by Windows' native tab control, and no setting changes them. `VCL_DRAW_WIDGETS_FROM_FILE` / theme_definitions has no effect on the Windows backend, and `SAL_NO_NWF` gives older-looking outlined tabs. Flat tabs would need a rebuilt LibreOffice.

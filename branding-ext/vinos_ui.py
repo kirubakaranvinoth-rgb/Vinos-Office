@@ -1,14 +1,12 @@
 # Vino's Office: modern ribbon layout.
 #
-# Switches each app (Calc, Writer, Impress, Draw) to LibreOffice's "Tabbed Compact" ribbon
-# (notebookbar_compact.ui: one slim row of icons, no group labels; with the solid app-coloured header from
-# Common.xcu this is the flat OnlyOffice-like look) the first time it opens, once per user. It uses the same
-# command as View > User Interface, so the classic toolbars and menu bar are tidied away properly. Anyone
-# who switches to another layout keeps their choice: the switch is remembered in
-# <user profile>/config/vinosoffice-ui.json and never repeated.
+# Switches each app (Calc, Writer, Impress, Draw) to LibreOffice's "Tabbed" ribbon (notebookbar.ui) the
+# first time it opens, once per user. It uses the same command as View > User Interface, so the classic
+# toolbars and menu bar are tidied away properly. Anyone who switches to another layout keeps their
+# choice: the switch is remembered in <user profile>/config/vinosoffice-ui.json and never repeated.
 #
-# 1.0.6 used the full "Tabbed" ribbon (key "ribbon" in the json). Apps still on that are moved to the
-# compact ribbon once; apps the user moved to some other layout are left alone.
+# History: 1.0.6 = full ribbon (json key "ribbon"), 1.0.7 = compact ribbon (key "compact"), 1.0.8 = full
+# ribbon again (key "full2"). Apps still on a layout we set are moved to the full ribbon once.
 
 import json
 import os
@@ -22,8 +20,9 @@ from com.sun.star.lang import XServiceInfo
 from com.sun.star.task import XJob
 
 JOB_IMPL = "com.vinosoffice.RibbonJob"
-RIBBON = "notebookbar_compact.ui"
-OLD_RIBBON = "notebookbar.ui"  # what 1.0.6 switched to
+RIBBON = "notebookbar.ui"                                   # full "Tabbed" ribbon (1.0.6, and again from 1.0.8)
+OUR_LAYOUTS = ("", "notebookbar.ui", "notebookbar_compact.ui")  # layouts earlier versions switched to
+FLAG = "full2"                                               # json key for this round of switching
 APPS = {
     "com.sun.star.sheet.SpreadsheetDocument": "Calc",
     "com.sun.star.text.TextDocument": "Writer",
@@ -62,12 +61,13 @@ def _flags(ctx):
 
 
 def _done(ctx):
-    """Apps already handled for the current (compact) ribbon."""
+    """Apps already handled in this round (the full ribbon)."""
     flags = _flags(ctx)
-    done = set(flags.get("compact", []))
-    # 1.0.6 put these on the full ribbon; if the user has since chosen something else, respect it
-    for app in flags.get("ribbon", []):
-        if app not in done and current_layout(ctx, app) not in ("", OLD_RIBBON, RIBBON):
+    done = set(flags.get(FLAG, []))
+    # Earlier versions switched these (1.0.6 full ribbon, 1.0.7 compact). If the user has since picked
+    # some other layout themselves, respect it; otherwise move them (back) to the full ribbon once.
+    for app in set(flags.get("ribbon", [])) | set(flags.get("compact", [])):
+        if app not in done and current_layout(ctx, app) not in OUR_LAYOUTS:
             done.add(app)
     return done
 
@@ -75,7 +75,7 @@ def _done(ctx):
 def _mark_done(ctx, app):
     try:
         flags = _flags(ctx)
-        flags["compact"] = sorted(set(flags.get("compact", [])) | {app})
+        flags[FLAG] = sorted(set(flags.get(FLAG, [])) | {app})
         with open(_flag_file(ctx), "w", encoding="utf-8") as f:
             json.dump(flags, f)
     except Exception:
