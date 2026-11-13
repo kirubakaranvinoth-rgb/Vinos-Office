@@ -5,4 +5,11 @@
     <prop oor:name="ShowTipOfTheDay" oor:op="replace"><value>false</value></prop>
     <prop oor:name="ShowDonation" oor:op="replace"><value>false</value></prop>
   </node>
+  <node oor:name="Help">
+    <node oor:name="StartCenter">
+      <!-- Start Center middle area: Vino navy (matches the logo tile) with soft white text, in light and dark theme -->
+      <prop oor:name="StartCenterThumbnailsBackgroundColor" oor:op="replace"><value>727594</value></prop>
+      <prop oor:name="StartCenterThumbnailsTextColor" oor:op="replace"><value>15134453</value></prop>
+    </node>
+  </node>
 </oor:component-data>
