@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Vino's Office: LibreOffice's own update checks are switched off and locked (oor:finalized), so users
+     cannot turn them back on. Updates are delivered as new Vino's Office setups instead, because a stock
+     LibreOffice update would remove the Vino's Office branding and add-ons. -->
+<oor:component-data xmlns:oor="http://openoffice.org/2001/registry" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    oor:name="Jobs" oor:package="org.openoffice.Office">
+  <node oor:name="Jobs">
+    <node oor:name="UpdateCheck" oor:op="fuse">
+      <node oor:name="Arguments">
+        <prop oor:name="AutoCheckEnabled" oor:type="xs:boolean" oor:op="fuse" oor:finalized="true"><value>false</value></prop>
+        <prop oor:name="AutoDownloadEnabled" oor:type="xs:boolean" oor:op="fuse" oor:finalized="true"><value>false</value></prop>
+      </node>
+    </node>
+  </node>
+</oor:component-data>

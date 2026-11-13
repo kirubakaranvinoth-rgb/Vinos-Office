@@ -16,7 +16,7 @@ import sys
 import zipfile
 from pathlib import Path
 
-VERSION = "1.0.1"
+VERSION = "1.0.2"
 LO_VERSION = "26.8.3"
 LO_MSI = f"vendor/LibreOffice_{LO_VERSION}_Win_x86-64.msi"
 LO_PRODUCTCODE = "{2E138BFE-5DFE-4CCB-B34D-56308CCE5097}"

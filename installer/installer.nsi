@@ -22,6 +22,8 @@ ManifestDPIAware true
 !define APP "Vino's Office"
 !define REGKEY "Software\VinosOffice"
 !define UNINSTKEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\VinosOffice"
+; LibreOffice administrator policy (HKLM\SOFTWARE\Policies\LibreOffice\<config path>): Value / Type / Final
+!define UPDPOLICY "SOFTWARE\Policies\LibreOffice\org.openoffice.Office.Jobs\Jobs\org.openoffice.Office.Jobs:Job['UpdateCheck']\Arguments"
 !define BRAND "..\brand\out"
 !define BUILD "..\build"
 
@@ -166,6 +168,16 @@ Section "Install"
     MessageBox MB_ICONEXCLAMATION "The ${APP} add-ons could not be registered (codes $0 / $1). Close all ${APP} / LibreOffice windows and run Setup again."
   ${EndIf}
 
+  DetailPrint "Blocking LibreOffice's own updates..."
+  ; Also locked inside the branding add-on; this policy keeps it locked even if that add-on is removed
+  ; (for example by someone installing a stock LibreOffice over Vino's Office).
+  WriteRegStr HKLM "${UPDPOLICY}\AutoCheckEnabled" "Value" "false"
+  WriteRegStr HKLM "${UPDPOLICY}\AutoCheckEnabled" "Type" "xs:boolean"
+  WriteRegDWORD HKLM "${UPDPOLICY}\AutoCheckEnabled" "Final" 1
+  WriteRegStr HKLM "${UPDPOLICY}\AutoDownloadEnabled" "Value" "false"
+  WriteRegStr HKLM "${UPDPOLICY}\AutoDownloadEnabled" "Type" "xs:boolean"
+  WriteRegDWORD HKLM "${UPDPOLICY}\AutoDownloadEnabled" "Final" 1
+
   DetailPrint "Creating shortcuts..."
   CreateDirectory "$SMPROGRAMS\${APP}"
   CreateShortcut "$SMPROGRAMS\${APP}\${APP}.lnk" "$LOProg\soffice.exe" "" "$INSTDIR\branding\vinos-office.ico" 0
@@ -231,6 +243,10 @@ Section "Uninstall"
     !insertmacro Restore "$LOProg\shell\logo-sc_inverted.svg"
     !insertmacro Restore "$LOProg\shell\about.svg"
   ${EndIf}
+
+  DeleteRegKey HKLM "${UPDPOLICY}\AutoCheckEnabled"
+  DeleteRegKey HKLM "${UPDPOLICY}\AutoDownloadEnabled"
+  DeleteRegKey /ifempty HKLM "${UPDPOLICY}"
 
   Delete "$SMPROGRAMS\${APP}\*.lnk"
   RMDir "$SMPROGRAMS\${APP}"
