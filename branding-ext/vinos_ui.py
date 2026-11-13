@@ -1,9 +1,14 @@
 # Vino's Office: modern ribbon layout.
 #
-# Switches each app (Calc, Writer, Impress, Draw) to LibreOffice's "Tabbed" ribbon (notebookbar.ui) the
-# first time it opens, once per user. It uses the same command as View > User Interface > Tabbed, so the
-# classic toolbars and menu bar are tidied away properly. Anyone who switches back to another layout keeps
-# their choice: the switch is remembered in <user profile>/config/vinosoffice-ui.json and never repeated.
+# Switches each app (Calc, Writer, Impress, Draw) to LibreOffice's "Tabbed Compact" ribbon
+# (notebookbar_compact.ui: one slim row of icons, no group labels; with the solid app-coloured header from
+# Common.xcu this is the flat OnlyOffice-like look) the first time it opens, once per user. It uses the same
+# command as View > User Interface, so the classic toolbars and menu bar are tidied away properly. Anyone
+# who switches to another layout keeps their choice: the switch is remembered in
+# <user profile>/config/vinosoffice-ui.json and never repeated.
+#
+# 1.0.6 used the full "Tabbed" ribbon (key "ribbon" in the json). Apps still on that are moved to the
+# compact ribbon once; apps the user moved to some other layout are left alone.
 
 import json
 import os
@@ -17,7 +22,8 @@ from com.sun.star.lang import XServiceInfo
 from com.sun.star.task import XJob
 
 JOB_IMPL = "com.vinosoffice.RibbonJob"
-RIBBON = "notebookbar.ui"
+RIBBON = "notebookbar_compact.ui"
+OLD_RIBBON = "notebookbar.ui"  # what 1.0.6 switched to
 APPS = {
     "com.sun.star.sheet.SpreadsheetDocument": "Calc",
     "com.sun.star.text.TextDocument": "Writer",
@@ -47,19 +53,31 @@ def _flag_file(ctx):
     return os.path.join(uno.fileUrlToSystemPath(ps.UserConfig), "vinosoffice-ui.json")
 
 
-def _done(ctx):
+def _flags(ctx):
     try:
         with open(_flag_file(ctx), encoding="utf-8") as f:
-            return set(json.load(f).get("ribbon", []))
+            return json.load(f)
     except Exception:
-        return set()
+        return {}
+
+
+def _done(ctx):
+    """Apps already handled for the current (compact) ribbon."""
+    flags = _flags(ctx)
+    done = set(flags.get("compact", []))
+    # 1.0.6 put these on the full ribbon; if the user has since chosen something else, respect it
+    for app in flags.get("ribbon", []):
+        if app not in done and current_layout(ctx, app) not in ("", OLD_RIBBON, RIBBON):
+            done.add(app)
+    return done
 
 
 def _mark_done(ctx, app):
     try:
-        done = _done(ctx) | {app}
+        flags = _flags(ctx)
+        flags["compact"] = sorted(set(flags.get("compact", [])) | {app})
         with open(_flag_file(ctx), "w", encoding="utf-8") as f:
-            json.dump({"ribbon": sorted(done)}, f)
+            json.dump(flags, f)
     except Exception:
         pass
 

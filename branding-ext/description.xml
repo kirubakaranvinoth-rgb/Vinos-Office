@@ -4,7 +4,7 @@
              xmlns:l="http://libreoffice.org/extensions/description/2011"
              xmlns:xlink="http://www.w3.org/1999/xlink">
   <identifier value="com.vinosoffice.branding"/>
-  <version value="1.0.6"/>
+  <version value="1.0.7"/>
   <dependencies><l:LibreOffice-minimal-version value="7.0" d:name="LibreOffice 7.0"/></dependencies>
   <display-name><name lang="en">Vino's Office Branding</name></display-name>
   <publisher><name lang="en" xlink:href="https://github.com/kirubakaranvinoth-rgb">Vino's Office</name></publisher>

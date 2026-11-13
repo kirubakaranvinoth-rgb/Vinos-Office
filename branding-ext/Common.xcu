@@ -4,6 +4,8 @@
   <node oor:name="Misc">
     <prop oor:name="ShowTipOfTheDay" oor:op="replace"><value>false</value></prop>
     <prop oor:name="ShowDonation" oor:op="replace"><value>false</value></prop>
+    <!-- ribbon header in the full app colour (0 = solid, 255 = none): flat, OnlyOffice-like -->
+    <prop oor:name="NotebookbarColorTransparency" oor:op="replace"><value>0</value></prop>
   </node>
   <node oor:name="Appearance">
     <!-- turn on Vino's program colours (VinoTheme.xcu) -->
