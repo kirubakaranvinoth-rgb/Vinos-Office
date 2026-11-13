@@ -33,10 +33,25 @@ def icon(size: int) -> Image.Image:
     return img.resize((size, size), Image.LANCZOS)
 
 
+def index_icon(size: int) -> Image.Image:
+    """A contents list: green bullets with grey lines."""
+    s = 8
+    S = size * s
+    img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    for i in range(3):
+        y = S * (0.22 + i * 0.28)
+        d.rounded_rectangle((S * 0.08, y, S * 0.26, y + S * 0.16), radius=S * 0.04, fill=GREEN)
+        d.rounded_rectangle((S * 0.36, y + S * 0.03, S * 0.92, y + S * 0.13), radius=S * 0.04, fill=(84, 118, 150, 255))
+    return img.resize((size, size), Image.LANCZOS)
+
+
 def main():
     (SRC / "icons").mkdir(exist_ok=True)
     for n in (16, 26, 42):
         icon(n).save(SRC / "icons" / f"home_{n}.png")
+    for n in (16, 26):
+        index_icon(n).save(SRC / "icons" / f"index_{n}.png")
 
     version = re.search(r'<version value="([^"]+)"', (SRC / "description.xml").read_text(encoding="utf-8")).group(1)
     DIST.mkdir(exist_ok=True)

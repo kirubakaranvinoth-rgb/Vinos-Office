@@ -37,12 +37,42 @@
         </node>
       </node>
     </node>
+    <!-- Ribbon (Tabbed layout): Extension tab, Calc only -->
+    <node oor:name="OfficeNotebookBar">
+      <node oor:name="org.celllite.sheetshome" oor:op="replace">
+        <node oor:name="N1" oor:op="replace">
+          <prop oor:name="URL"><value>org.celllite.sheetshome:Home</value></prop>
+          <prop oor:name="Title"><value xml:lang="en-US">Sheets Home</value><value xml:lang="zh-CN">工作表主页</value><value xml:lang="zh-TW">工作表首頁</value></prop>
+          <prop oor:name="Target"><value>_self</value></prop>
+          <prop oor:name="Context"><value>com.sun.star.sheet.SpreadsheetDocument</value></prop>
+          <prop oor:name="ControlType"><value>ImageButton</value></prop>
+          <prop oor:name="Width"><value>0</value></prop>
+          <prop oor:name="Style"><value>Icon+Text</value></prop>
+        </node>
+        <node oor:name="N2" oor:op="replace">
+          <prop oor:name="URL"><value>org.celllite.sheetshome:Index</value></prop>
+          <prop oor:name="Title"><value xml:lang="en-US">Contents Sheet</value><value xml:lang="zh-CN">目录工作表</value><value xml:lang="zh-TW">目錄工作表</value></prop>
+          <prop oor:name="Target"><value>_self</value></prop>
+          <prop oor:name="Context"><value>com.sun.star.sheet.SpreadsheetDocument</value></prop>
+          <prop oor:name="ControlType"><value>ImageButton</value></prop>
+          <prop oor:name="Width"><value>0</value></prop>
+          <prop oor:name="Style"><value>Icon+Text</value></prop>
+        </node>
+      </node>
+    </node>
     <node oor:name="Images">
       <node oor:name="org.celllite.sheetshome.home" oor:op="replace">
         <prop oor:name="URL"><value>org.celllite.sheetshome:Home</value></prop>
         <node oor:name="UserDefinedImages">
           <prop oor:name="ImageSmallURL"><value>%origin%/icons/home_16.png</value></prop>
           <prop oor:name="ImageBigURL"><value>%origin%/icons/home_26.png</value></prop>
+        </node>
+      </node>
+      <node oor:name="org.celllite.sheetshome.index" oor:op="replace">
+        <prop oor:name="URL"><value>org.celllite.sheetshome:Index</value></prop>
+        <node oor:name="UserDefinedImages">
+          <prop oor:name="ImageSmallURL"><value>%origin%/icons/index_16.png</value></prop>
+          <prop oor:name="ImageBigURL"><value>%origin%/icons/index_26.png</value></prop>
         </node>
       </node>
     </node>
