@@ -105,9 +105,58 @@ FunctionEnd
   ${EndIf}
 !macroend
 
+Var Log          ; setup log: %TEMP%\VinosOffice-setup.log
+!macro Log TEXT
+  FileWrite $Log "${TEXT}$\r$\n"
+!macroend
+
+; Make sure $LOProg points at a folder that really has the office suite's tools; try the other places it can be.
+Function FindProgramDir
+  ${IfNot} ${FileExists} "$LOProg\unopkg.com"
+    !insertmacro Log "unopkg.com not in '$LOProg', searching"
+    ReadRegStr $R1 HKLM "SOFTWARE\LibreOffice\UNO\InstallPath" ""
+    ReadRegStr $R2 HKLM "${REGKEY}" "ProgramDir"
+    ${If} ${FileExists} "$INSTDIR\program\unopkg.com"
+      StrCpy $LOProg "$INSTDIR\program"
+    ${ElseIf} ${FileExists} "$R2\unopkg.com"
+      StrCpy $LOProg $R2
+    ${ElseIf} ${FileExists} "$R1\unopkg.com"
+      StrCpy $LOProg $R1
+    ${ElseIf} ${FileExists} "$PROGRAMFILES64\LibreOffice\program\unopkg.com"
+      StrCpy $LOProg "$PROGRAMFILES64\LibreOffice\program"
+    ${ElseIf} ${FileExists} "$PROGRAMFILES64\Vinos Office\program\unopkg.com"
+      StrCpy $LOProg "$PROGRAMFILES64\Vinos Office\program"
+    ${EndIf}
+  ${EndIf}
+  ${If} ${FileExists} "$LOProg\unopkg.com"
+    !insertmacro Log "program folder: '$LOProg' (unopkg.com found)"
+  ${Else}
+    !insertmacro Log "program folder: '$LOProg' (unopkg.com NOT found)"
+  ${EndIf}
+FunctionEnd
+
+; Register one add-on; on failure retry once (a just-installed suite can still be finishing its first-run setup)
+!macro AddOxt OXT RESULT
+  nsExec::ExecToStack '"$LOProg\unopkg.com" add --shared --force --suppress-license "$INSTDIR\branding\${OXT}"'
+  Pop ${RESULT}
+  Pop $R9
+  !insertmacro Log "unopkg add ${OXT} -> ${RESULT}: $R9"
+  ${If} ${RESULT} != 0
+    Sleep 3000
+    nsExec::ExecToStack '"$LOProg\unopkg.com" add --shared --force --suppress-license "$INSTDIR\branding\${OXT}"'
+    Pop ${RESULT}
+    Pop $R9
+    !insertmacro Log "retry unopkg add ${OXT} -> ${RESULT}: $R9"
+  ${EndIf}
+!macroend
+
 Section "Install"
   SetOutPath "$INSTDIR\branding"
   File "${BRAND}\vinos-office.ico"
+  FileOpen $Log "$TEMP\VinosOffice-setup.log" w
+  !insertmacro Log "${APP} ${VERSION} setup (suite ${LO_VERSION})"
+  !insertmacro Log "mode: $Existing (0 = install suite, 1 = brand existing LibreOffice, 2 = update Vino's Office)"
+  !insertmacro Log "install folder: '$INSTDIR', suite program folder from registry: '$LOProg'"
 
   ${If} $Existing == 0
     DetailPrint "Installing the office suite (this takes a few minutes)..."
@@ -115,8 +164,10 @@ Section "Install"
     File /oname=suite.msi "${LO_MSI}"
     ExecWait 'msiexec.exe /i "$PLUGINSDIR\suite.msi" /qn /norestart ALLUSERS=1 INSTALLLOCATION="$INSTDIR" CREATEDESKTOPLINK=0 REGISTER_NO_MSO_TYPES=1 ISCHECKFORPRODUCTUPDATES=0 QUICKSTART=0 REMOVE=gm_o_Onlineupdate ARPSYSTEMCOMPONENT=1 RebootYesNo=No /l*v "$TEMP\VinosOffice-suite-install.log"' $0
     Delete "$PLUGINSDIR\suite.msi"
+    !insertmacro Log "suite msiexec exit code: $0"
     ${If} $0 != 0
     ${AndIf} $0 != 3010
+      FileClose $Log
       MessageBox MB_ICONSTOP "The office suite could not be installed (error $0).$\r$\nDetails: $TEMP\VinosOffice-suite-install.log"
       Abort
     ${EndIf}
@@ -130,6 +181,13 @@ Section "Install"
     WriteRegStr HKLM "${REGKEY}" "SuiteByVino" "0"
   ${Else}
     DetailPrint "Updating ${APP} in $LOProg..."
+  ${EndIf}
+  Call FindProgramDir
+  ${IfNot} ${FileExists} "$LOProg\soffice.exe"
+    !insertmacro Log "ERROR: no office suite found"
+    FileClose $Log
+    MessageBox MB_ICONSTOP "Setup could not find the office suite (looked in '$LOProg').$\r$\nPlease send the file $TEMP\VinosOffice-setup.log to your administrator."
+    Abort
   ${EndIf}
   WriteRegStr HKLM "${REGKEY}" "ProgramDir" "$LOProg"
   WriteRegStr HKLM "${REGKEY}" "InstallDir" "$INSTDIR"
@@ -159,13 +217,11 @@ Section "Install"
   SetOutPath "$INSTDIR\branding"
   File "${BUILD}\VinosOfficeBranding.oxt"
   File "${BUILD}\SheetsHome.oxt"
-  nsExec::ExecToLog '"$LOProg\unopkg.com" add --shared --force --suppress-license "$INSTDIR\branding\VinosOfficeBranding.oxt"'
-  Pop $0
-  nsExec::ExecToLog '"$LOProg\unopkg.com" add --shared --force --suppress-license "$INSTDIR\branding\SheetsHome.oxt"'
-  Pop $1
+  !insertmacro AddOxt "VinosOfficeBranding.oxt" $0
+  !insertmacro AddOxt "SheetsHome.oxt" $1
   ${If} $0 != 0
   ${OrIf} $1 != 0
-    MessageBox MB_ICONEXCLAMATION "The ${APP} add-ons could not be registered (codes $0 / $1). Close all ${APP} / LibreOffice windows and run Setup again."
+    MessageBox MB_ICONEXCLAMATION "The ${APP} add-ons could not be registered (results: $0 / $1, program folder: $LOProg).$\r$\nClose all ${APP} / LibreOffice windows and run Setup again.$\r$\nIf it happens again, please send $TEMP\VinosOffice-setup.log."
   ${EndIf}
 
   DetailPrint "Blocking LibreOffice's own updates..."
@@ -198,6 +254,8 @@ Section "Install"
   WriteRegDWORD HKLM "${UNINSTKEY}" "NoRepair" 1
   ${GetSize} "$INSTDIR" "/S=0K" $0 $1 $2
   WriteRegDWORD HKLM "${UNINSTKEY}" "EstimatedSize" $0
+  !insertmacro Log "finished"
+  FileClose $Log
 SectionEnd
 
 !macro Restore FILE
