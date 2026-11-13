@@ -1,0 +1,12 @@
+Vino's Office
+
+Vino's Office is an office suite (spreadsheets, documents and presentations) built on LibreOffice, with Vino's Office branding and the Sheets Home add-on.
+
+LibreOffice is made by The Document Foundation and its contributors, and is licensed under the Mozilla Public License, version 2.0 (MPL-2.0). LibreOffice's source code is available at:
+    https://www.libreoffice.org/download/source-code/
+
+The full LibreOffice license, credits and third-party notices are installed with the program (LICENSE.html, CREDITS.fodt, NOTICE in the installation folder).
+
+Vino's Office is an independent distribution. It is not made, endorsed or supported by The Document Foundation, and "LibreOffice" is a trademark of The Document Foundation.
+
+The Vino's Office branding and the Sheets Home add-on are provided as they are, without warranty of any kind.

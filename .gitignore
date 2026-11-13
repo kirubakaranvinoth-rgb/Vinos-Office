@@ -1,0 +1,5 @@
+vendor/*.msi
+build/
+test/
+brand/out/
+__pycache__/

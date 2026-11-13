@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<oor:component-data xmlns:oor="http://openoffice.org/2001/registry" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    oor:name="Infobar" oor:package="org.openoffice.Office.UI">
+  <node oor:name="Enabled">
+    <prop oor:name="Donate" oor:op="replace"><value>false</value></prop>
+    <prop oor:name="GetInvolved" oor:op="replace"><value>false</value></prop>
+    <prop oor:name="WhatsNew" oor:op="replace"><value>false</value></prop>
+  </node>
+</oor:component-data>
