@@ -4,12 +4,20 @@
 # and menus keep the old theme), so with Windows in dark mode, choosing Light looks broken. This:
 #   - adds View > Vino's Office Theme > Light / Dark / Same as Windows   (com.vinosoffice.theme:Light ...)
 #   - watches the Appearance setting (also when changed in Tools > Options) and offers to restart
-#     Vino's Office straight away so the new theme is applied completely.
+#     Vino's Office so the new theme is applied completely.
+#
+# Rules that keep it from interfering with LibreOffice (an earlier version could freeze it when the theme
+# and the menu language were changed together in Tools > Options):
+#   - never block LibreOffice: the question is a native Windows box on a background thread, shown
+#     1.5 s after the change so Tools > Options has finished saving;
+#   - if the menu language changed too (or a restart is already on its way), LibreOffice asks to restart
+#     on its own, so we stay quiet;
+#   - when Vino's Office closes or restarts, our open question closes itself and the listener is removed.
 
 import uno
 import unohelper
 from com.sun.star.beans import PropertyValue
-from com.sun.star.frame import XDispatch, XDispatchProvider
+from com.sun.star.frame import XDispatch, XDispatchProvider, XTerminateListener
 from com.sun.star.lang import XInitialization, XServiceInfo
 from com.sun.star.task import XJob
 from com.sun.star.util import XChangesListener
@@ -18,10 +26,24 @@ PROTOCOL = "com.vinosoffice.theme:"
 HANDLER_IMPL = "com.vinosoffice.ThemeHandler"
 JOB_IMPL = "com.vinosoffice.ThemeWatcher"
 APPEARANCE = "/org.openoffice.Office.Common/Appearance"
+LINGU = "/org.openoffice.Office.Linguistic/General"
 MODES = {"Auto": 0, "Light": 1, "Dark": 2}
-NAMES = {0: "Same as Windows", 1: "Light", 2: "Dark"}
 
-_state = {"watching": False, "asking": False, "last": None}
+TEXT = {
+    "en": {"names": {0: "Same as Windows", 1: "Light", 2: "Dark"},
+           "restart": "Vino's Office needs to restart to finish switching to the %s theme.\n\n"
+                      "Restart now? You will be asked to save any open documents.",
+           "already": "Vino's Office is already using the %s theme."},
+    "zh-CN": {"names": {0: "跟随 Windows", 1: "浅色", 2: "深色"},
+              "restart": "Vino's Office 需要重新启动才能完成切换到“%s”主题。\n\n现在重新启动吗？系统会提示您保存打开的文档。",
+              "already": "Vino's Office 已经在使用“%s”主题。"},
+    "zh-TW": {"names": {0: "跟隨 Windows", 1: "淺色", 2: "深色"},
+              "restart": "Vino's Office 需要重新啟動才能完成切換到「%s」佈景主題。\n\n現在重新啟動嗎？系統會提示您儲存開啟的文件。",
+              "already": "Vino's Office 已經在使用「%s」佈景主題。"},
+}
+
+_state = {"watching": False, "asking": False, "pending": False, "terminating": False,
+          "last": None, "ui": None, "node": None, "listener": None}
 
 
 def _cfg(ctx, path, write=False):
@@ -37,6 +59,27 @@ def current_mode(ctx):
         return 0
 
 
+def ui_locale(ctx):
+    try:
+        return _cfg(ctx, LINGU).getPropertyValue("UILocale") or ""
+    except Exception:
+        return ""
+
+
+def texts(ctx):
+    loc = ui_locale(ctx)
+    if not loc:
+        try:
+            loc = _cfg(ctx, "/org.openoffice.Setup/L10N").getPropertyValue("ooLocale") or ""
+        except Exception:
+            loc = ""
+    if loc.startswith(("zh-TW", "zh-HK", "zh-MO")):
+        return TEXT["zh-TW"]
+    if loc.startswith("zh"):
+        return TEXT["zh-CN"]
+    return TEXT["en"]
+
+
 def _parent_window(ctx):
     try:
         desktop = ctx.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", ctx)
@@ -46,33 +89,65 @@ def _parent_window(ctx):
         return None
 
 
-def ask(ctx, text, yes_no=True):
-    """Message box. On Windows a native one: by the time we ask, Vino's Office is half-way between themes
-    and its own dialogs would draw white text on white buttons."""
+BOX_TITLE = "Vino's Office"
+
+
+def ask(text, yes_no=True):
+    """Native Windows message box. Always called on a background thread (see in_background), so
+    LibreOffice's main thread never waits on it. Native, because by then Vino's Office is half-way
+    between themes and its own dialogs would draw white text on white buttons."""
+    import ctypes
+    MB_YESNO, MB_OK, MB_ICONQUESTION, MB_ICONINFO = 0x4, 0x0, 0x20, 0x40
+    MB_SETFOREGROUND, MB_TOPMOST = 0x10000, 0x40000
+    flags = (MB_YESNO | MB_ICONQUESTION if yes_no else MB_OK | MB_ICONINFO) | MB_SETFOREGROUND | MB_TOPMOST
+    return ctypes.windll.user32.MessageBoxW(None, text, BOX_TITLE, flags) == 6  # IDYES
+
+
+def close_open_question():
+    """Close our question if it is still open (Vino's Office is closing or restarting anyway)."""
     try:
         import ctypes
-        MB_YESNO, MB_OK, MB_ICONQUESTION, MB_ICONINFO = 0x4, 0x0, 0x20, 0x40
-        MB_SETFOREGROUND, MB_TOPMOST, MB_TASKMODAL = 0x10000, 0x40000, 0x2000
-        flags = (MB_YESNO | MB_ICONQUESTION if yes_no else MB_OK | MB_ICONINFO) | MB_SETFOREGROUND | MB_TOPMOST | MB_TASKMODAL
-        return ctypes.windll.user32.MessageBoxW(None, text, "Vino's Office", flags) == 6  # IDYES
+        u = ctypes.windll.user32
+        hwnd = u.FindWindowW("#32770", BOX_TITLE)
+        while hwnd:
+            u.PostMessageW(hwnd, 0x0010, 0, 0)  # WM_CLOSE = answer "No"
+            hwnd = u.FindWindowExW(None, hwnd, "#32770", BOX_TITLE)
     except Exception:
-        tk = ctx.getServiceManager().createInstanceWithContext("com.sun.star.awt.Toolkit", ctx)
-        buttons = uno.getConstantByName("com.sun.star.awt.MessageBoxButtons.BUTTONS_YES_NO" if yes_no else
-                                        "com.sun.star.awt.MessageBoxButtons.BUTTONS_OK")
-        box = tk.createMessageBox(_parent_window(ctx), uno.Enum("com.sun.star.awt.MessageBoxType", "QUERYBOX" if yes_no else "INFOBOX"),
-                                  buttons, "Vino's Office", text)
-        return box.execute() == uno.getConstantByName("com.sun.star.awt.MessageBoxResults.YES")
+        pass
 
 
-def offer_restart(ctx, mode):
-    """Ask once, then restart Vino's Office (documents get the usual save prompt)."""
-    if _state["asking"]:
+def in_background(fn):
+    import threading
+    threading.Thread(target=fn, daemon=True).start()
+
+
+def restart_already_requested(ctx):
+    try:
+        return ctx.getValueByName("/singletons/com.sun.star.task.OfficeRestartManager").isRestartRequested(False)
+    except Exception:
+        return False
+
+
+def offer_restart(ctx):
+    """Background thread: wait for the settings change to settle, then ask once and maybe restart."""
+    import time
+    time.sleep(1.5)  # let Tools > Options finish saving everything (theme and language are saved separately)
+    _state["pending"] = False
+    if _state["asking"] or _state["terminating"]:
+        return
+    if ui_locale(ctx) != _state["ui"] or restart_already_requested(ctx):
+        # The menu language changed as well: LibreOffice asks to restart by itself, and that restart
+        # applies the theme too. A second question (and a second restart) is what caused the freeze.
+        _state["ui"] = ui_locale(ctx)
         return
     _state["asking"] = True
     try:
-        if ask(ctx, "Vino's Office needs to restart to finish switching to the %s theme.\n\n"
-                    "Restart now? You will be asked to save any open documents." % NAMES.get(mode, "new")):
+        t = texts(ctx)
+        yes = ask(t["restart"] % t["names"].get(current_mode(ctx), ""))
+        if yes and not _state["terminating"] and not restart_already_requested(ctx):
             ctx.getValueByName("/singletons/com.sun.star.task.OfficeRestartManager").requestRestart(None)
+    except Exception:
+        pass
     finally:
         _state["asking"] = False
 
@@ -91,24 +166,59 @@ class AppearanceWatcher(unohelper.Base, XChangesListener):
         self.ctx = ctx
 
     def changesOccurred(self, event):
+        # Only note the change here; never show UI or restart from inside a settings commit.
+        if _state["terminating"]:
+            return
         mode = current_mode(self.ctx)
         if mode != _state["last"]:
             _state["last"] = mode
-            offer_restart(self.ctx, mode)
+            if not _state["pending"]:
+                _state["pending"] = True
+                ctx = self.ctx
+                in_background(lambda: offer_restart(ctx))
 
     def disposing(self, event):
         _state["watching"] = False
 
 
+class StopOnExit(unohelper.Base, XTerminateListener):
+    """Detach everything when Vino's Office closes or restarts."""
+
+    def queryTermination(self, event):
+        close_open_question()
+
+    def notifyTermination(self, event):
+        stop_watching()
+
+    def disposing(self, event):
+        stop_watching()
+
+
+def stop_watching():
+    _state["terminating"] = True
+    close_open_question()
+    node, listener = _state.get("node"), _state.get("listener")
+    _state["node"] = _state["listener"] = None
+    _state["watching"] = False
+    if node is not None and listener is not None:
+        try:
+            node.removeChangesListener(listener)
+        except Exception:
+            pass
+
+
 def start_watching(ctx):
-    if _state["watching"]:
+    if _state["watching"] or _state["terminating"]:
         return
     try:
         _state["last"] = current_mode(ctx)
+        _state["ui"] = ui_locale(ctx)
         node = _cfg(ctx, APPEARANCE)
-        node.addChangesListener(AppearanceWatcher(ctx))
-        _state["node"] = node  # keep the access object alive, or the listener goes away with it
+        listener = AppearanceWatcher(ctx)
+        node.addChangesListener(listener)
+        _state["node"], _state["listener"] = node, listener  # keep alive; removed again on exit
         _state["watching"] = True
+        ctx.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", ctx).addTerminateListener(StopOnExit())
     except Exception:
         pass
 
@@ -132,7 +242,8 @@ class ThemeHandler(unohelper.Base, XInitialization, XDispatchProvider, XDispatch
             return
         start_watching(self.ctx)
         if not set_mode(self.ctx, mode):
-            ask(self.ctx, "Vino's Office is already using the %s theme." % NAMES[mode], yes_no=False)
+            t = texts(self.ctx)
+            in_background(lambda: ask(t["already"] % t["names"][mode], yes_no=False))
 
     def addStatusListener(self, listener, url):
         pass

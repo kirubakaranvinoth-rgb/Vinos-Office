@@ -162,7 +162,7 @@ Section "Install"
     DetailPrint "Installing the office suite (this takes a few minutes)..."
     SetOutPath "$PLUGINSDIR"
     File /oname=suite.msi "${LO_MSI}"
-    ExecWait 'msiexec.exe /i "$PLUGINSDIR\suite.msi" /qn /norestart ALLUSERS=1 INSTALLLOCATION="$INSTDIR" CREATEDESKTOPLINK=0 REGISTER_NO_MSO_TYPES=1 ISCHECKFORPRODUCTUPDATES=0 QUICKSTART=0 REMOVE=gm_o_Onlineupdate ARPSYSTEMCOMPONENT=1 RebootYesNo=No /l*v "$TEMP\VinosOffice-suite-install.log"' $0
+    ExecWait 'msiexec.exe /i "$PLUGINSDIR\suite.msi" /qn /norestart ALLUSERS=1 INSTALLLOCATION="$INSTDIR" CREATEDESKTOPLINK=0 REGISTER_NO_MSO_TYPES=1 ISCHECKFORPRODUCTUPDATES=0 QUICKSTART=0 UI_LANGS=en_US,zh_CN,zh_TW REMOVE=gm_o_Onlineupdate ARPSYSTEMCOMPONENT=1 RebootYesNo=No /l*v "$TEMP\VinosOffice-suite-install.log"' $0
     Delete "$PLUGINSDIR\suite.msi"
     !insertmacro Log "suite msiexec exit code: $0"
     ${If} $0 != 0
@@ -217,6 +217,12 @@ Section "Install"
   SetOutPath "$INSTDIR\branding"
   File "${BUILD}\VinosOfficeBranding.oxt"
   File "${BUILD}\SheetsHome.oxt"
+  ; A personal (per-user) copy of Sheets Home, e.g. from installing the .oxt by hand, clashes with the
+  ; all-users copy installed here (two sets of the same commands); remove it. Errors = nothing to remove.
+  nsExec::ExecToStack '"$LOProg\unopkg.com" remove org.celllite.sheetshome'
+  Pop $R8
+  Pop $R9
+  !insertmacro Log "remove personal Sheets Home copy -> $R8"
   !insertmacro AddOxt "VinosOfficeBranding.oxt" $0
   !insertmacro AddOxt "SheetsHome.oxt" $1
   ${If} $0 != 0

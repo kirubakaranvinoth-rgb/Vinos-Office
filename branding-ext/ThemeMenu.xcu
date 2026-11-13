@@ -15,21 +15,21 @@
             </node>
             <node oor:name="M1" oor:op="replace">
               <prop oor:name="URL"><value></value></prop>
-              <prop oor:name="Title"><value xml:lang="en-US">Vino's Office ~Theme</value></prop>
+              <prop oor:name="Title"><value xml:lang="en-US">Vino's Office ~Theme</value><value xml:lang="zh-CN">Vino's Office 主题(~T)</value><value xml:lang="zh-TW">Vino's Office 佈景主題(~T)</value></prop>
               <node oor:name="Submenu">
                 <node oor:name="T1" oor:op="replace">
                   <prop oor:name="URL"><value>com.vinosoffice.theme:Light</value></prop>
-                  <prop oor:name="Title"><value xml:lang="en-US">~Light</value></prop>
+                  <prop oor:name="Title"><value xml:lang="en-US">~Light</value><value xml:lang="zh-CN">浅色(~L)</value><value xml:lang="zh-TW">淺色(~L)</value></prop>
                   <prop oor:name="Target"><value>_self</value></prop>
                 </node>
                 <node oor:name="T2" oor:op="replace">
                   <prop oor:name="URL"><value>com.vinosoffice.theme:Dark</value></prop>
-                  <prop oor:name="Title"><value xml:lang="en-US">~Dark</value></prop>
+                  <prop oor:name="Title"><value xml:lang="en-US">~Dark</value><value xml:lang="zh-CN">深色(~D)</value><value xml:lang="zh-TW">深色(~D)</value></prop>
                   <prop oor:name="Target"><value>_self</value></prop>
                 </node>
                 <node oor:name="T3" oor:op="replace">
                   <prop oor:name="URL"><value>com.vinosoffice.theme:Auto</value></prop>
-                  <prop oor:name="Title"><value xml:lang="en-US">~Same as Windows</value></prop>
+                  <prop oor:name="Title"><value xml:lang="en-US">~Same as Windows</value><value xml:lang="zh-CN">跟随 Windows(~S)</value><value xml:lang="zh-TW">跟隨 Windows(~S)</value></prop>
                   <prop oor:name="Target"><value>_self</value></prop>
                 </node>
               </node>
