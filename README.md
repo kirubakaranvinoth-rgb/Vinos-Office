@@ -20,7 +20,7 @@ Bump `VERSION` in `build.py` for each release. To move to a newer LibreOffice, d
 
 ## What setup does
 
-- **PC without LibreOffice:** it installs LibreOffice silently into `C:\Program Files\Vinos Office` and hides LibreOffice's own Apps & Features entry, so only "Vino's Office" is listed. It doesn't register Office file types and doesn't install the online-update feature.
+- **PC without LibreOffice:** it installs LibreOffice silently into `C:\Program Files\Vinos Office` and hides LibreOffice's own Apps & Features entry, so only "Vino's Office" is listed. It doesn't register Office file types. LibreOffice's update checks are locked off by the branding add-on and a policy. Never pass ADDLOCAL or REMOVE to msiexec: with either one present, Windows Installer installs only the named features. 1.0.0–1.0.8 passed REMOVE and installed nothing on clean PCs.
 - **PC with LibreOffice:** it brands that existing installation. Uninstalling puts the original look back.
 - **Running a newer setup over an existing Vino's Office:** it updates the branding and add-ons.
 

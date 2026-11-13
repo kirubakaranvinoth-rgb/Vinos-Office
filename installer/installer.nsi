@@ -159,10 +159,24 @@ Section "Install"
   !insertmacro Log "install folder: '$INSTDIR', suite program folder from registry: '$LOProg'"
 
   ${If} $Existing == 0
+    ; A suite left registered by an earlier failed attempt (registered, but no program files) would make
+    ; msiexec /i do nothing; remove that registration first.
+    ${IfNot} ${FileExists} "$INSTDIR\program\soffice.exe"
+      ReadRegStr $1 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${LO_PRODUCTCODE}" "DisplayName"
+      ${If} $1 != ""
+        DetailPrint "Cleaning up an incomplete earlier installation..."
+        ExecWait 'msiexec.exe /x ${LO_PRODUCTCODE} /qn /norestart' $1
+        !insertmacro Log "removed incomplete suite registration -> $1"
+      ${EndIf}
+    ${EndIf}
     DetailPrint "Installing the office suite (this takes a few minutes)..."
     SetOutPath "$PLUGINSDIR"
     File /oname=suite.msi "${LO_MSI}"
-    ExecWait 'msiexec.exe /i "$PLUGINSDIR\suite.msi" /qn /norestart ALLUSERS=1 INSTALLLOCATION="$INSTDIR" CREATEDESKTOPLINK=0 REGISTER_NO_MSO_TYPES=1 ISCHECKFORPRODUCTUPDATES=0 QUICKSTART=0 UI_LANGS=en_US,zh_CN,zh_TW REMOVE=gm_o_Onlineupdate ARPSYSTEMCOMPONENT=1 RebootYesNo=No /l*v "$TEMP\VinosOffice-suite-install.log"' $0
+    ; NOTE: never pass ADDLOCAL/REMOVE here. As soon as one of them is on the command line, Windows
+    ; Installer installs only the features named, so "REMOVE=<one feature>" installed nothing at all
+    ; (bug in 1.0.0-1.0.8). LibreOffice's own update checks are locked off by the branding add-on and
+    ; the update policy below instead.
+    ExecWait 'msiexec.exe /i "$PLUGINSDIR\suite.msi" /qn /norestart ALLUSERS=1 INSTALLLOCATION="$INSTDIR" CREATEDESKTOPLINK=0 REGISTER_NO_MSO_TYPES=1 ISCHECKFORPRODUCTUPDATES=0 QUICKSTART=0 UI_LANGS=en_US,zh_CN,zh_TW ARPSYSTEMCOMPONENT=1 RebootYesNo=No /l*v "$TEMP\VinosOffice-suite-install.log"' $0
     Delete "$PLUGINSDIR\suite.msi"
     !insertmacro Log "suite msiexec exit code: $0"
     ${If} $0 != 0
